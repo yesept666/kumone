@@ -18,7 +18,17 @@ struct GlassTabBar: View {
         let tab: IOSTab
         let title: LocalizedStringKey
         let icon: String
+        /// Emoji icon, e.g. "🕊️". When set, it renders instead of the
+        /// SF Symbol in `icon`.
+        let emoji: String?
         var id: IOSTab { tab }
+
+        init(tab: IOSTab, title: LocalizedStringKey, icon: String, emoji: String? = nil) {
+            self.tab = tab
+            self.title = title
+            self.icon = icon
+            self.emoji = emoji
+        }
     }
 
     let items: [Item]
@@ -75,9 +85,14 @@ struct GlassTabBar: View {
     private func itemLabel(_ item: GlassTabBar.Item) -> some View {
         let isSelected = selection == item.tab
         return VStack(spacing: 3) {
-            Image(systemName: item.icon)
-                .font(.system(size: 23, weight: .semibold))
-                .symbolVariant(.fill)
+            if let emoji = item.emoji {
+                Text(emoji)
+                    .font(.system(size: 23))
+            } else {
+                Image(systemName: item.icon)
+                    .font(.system(size: 23, weight: .semibold))
+                    .symbolVariant(.fill)
+            }
             Text(item.title)
                 .font(.system(size: 10, weight: .semibold))
         }

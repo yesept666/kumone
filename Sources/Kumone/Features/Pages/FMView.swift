@@ -18,13 +18,28 @@ struct FMView: View {
     var body: some View {
         ZStack {
             backdrop
-            if account.hasAuthCookie {
-                content
-            } else {
-                loginPrompt
+            VStack(spacing: 0) {
+                // Custom header, like the Library page: the title sits
+                // right under the status bar instead of leaving a tall
+                // navigation bar above the content.
+                HStack {
+                    Text("随心一听")
+                        .font(.largeTitle)
+                        .bold()
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 6)
+                .padding(.bottom, 10)
+
+                if account.hasAuthCookie {
+                    content
+                } else {
+                    loginPrompt
+                }
             }
         }
-        .navigationTitle("随心一听")
+        .navigationBarHidden(true)
         .compatHiddenToolbarBackground()
     }
 

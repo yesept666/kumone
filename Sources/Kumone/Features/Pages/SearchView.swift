@@ -128,6 +128,11 @@ struct SearchView: View {
         }
         #endif
         .navigationTitle(searchText.isEmpty ? "搜索" : String(localized: "搜索：\(searchText)"))
+        // Compact inline title: the search field lives in the navigation
+        // bar drawer, so the bar cannot be hidden like the Library page,
+        // but an inline title keeps the top tight instead of a tall
+        // large-title bar.
+        .navigationBarTitleDisplayMode(.inline)
         .task(id: model.tab) {
             await model.load(tab: model.tab)
         }
