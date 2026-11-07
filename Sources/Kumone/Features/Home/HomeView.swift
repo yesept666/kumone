@@ -181,46 +181,6 @@ struct HomeView: View {
                 }
             }
 
-            if !model.toplists.isEmpty {
-                Shelf(title: "排行榜", seeAll: nil, rowHeight: Theme.Layout.coverShelfHeight) {
-                    ForEach(model.toplists) { toplist in
-                        NavigationLink(value: Destination.playlist(toplist.id)) {
-                            toplistCard(toplist)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-            }
-
-            if !model.newAlbums.isEmpty {
-                VStack(alignment: .leading, spacing: Theme.Layout.sectionHeaderSpacing) {
-                    SectionHeader(title: "新碟上架")
-                        .padding(.horizontal, Theme.Layout.contentInset)
-                    GeometryReader { geometry in
-                        let size = Theme.Layout.fittedShelfCardSize(availableWidth: geometry.size.width, leadingInset: Theme.Layout.contentInset)
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            LazyHStack(alignment: .top, spacing: 16) {
-                                ForEach(model.newAlbums) { album in
-                                    albumCard(album, size: size)
-                                }
-                            }
-                            .padding(.horizontal, Theme.Layout.contentInset)
-                            .frame(height: Theme.Layout.coverShelfHeight)
-                        }
-                        .shelfEdgeClip()
-                    }
-                    .frame(height: Theme.Layout.coverShelfHeight)
-                }
-            }
-
-            if !model.topArtists.isEmpty {
-                Shelf(title: "推荐歌手", rowHeight: Theme.Layout.artistShelfHeight) {
-                    ForEach(model.topArtists) { artist in
-                        artistCard(artist)
-                    }
-                }
-            }
-
             PlayerClearanceSpacer()
         }
         .padding(.top, Theme.Layout.pageTopPadding)
@@ -317,66 +277,6 @@ struct HomeView: View {
             }
         }
         .buttonStyle(.plain)
-    }
-
-    private func albumCard(_ album: AlbumSummary, size: CGFloat) -> some View {
-        NavigationLink(value: Destination.album(album.id)) {
-            CoverCardBody(
-                coverURL: album.picUrl?.resizedImageURL(384),
-                title: album.name,
-                subtitle: album.artistName,
-                size: size,
-                titleLineLimit: Theme.Layout.shelfTitleLineLimit
-            ) {
-                Task {
-                    if let detail = try? await MusicAPI.album(id: album.id) {
-                        player.play(tracks: detail.songs, source: .album(album.id),
-                                    context: .album(id: album.id, name: album.name))
-                    }
-                }
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func artistCard(_ artist: ArtistSummary) -> some View {
-        NavigationLink(value: Destination.artist(artist.id)) {
-            VStack(spacing: 10) {
-                CachedAsyncImage(url: artist.picUrl?.resizedImageURL(256))
-                    .frame(width: 128, height: 128)
-                    .clipShape(Circle())
-                    .overlay(Circle().strokeBorder(.primary.opacity(0.08), lineWidth: 0.5))
-                Text(artist.name)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-            }
-            .frame(width: 140)
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func toplistCard(_ toplist: ToplistItem) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ZStack(alignment: .bottomLeading) {
-                CachedAsyncImage(url: toplist.coverImgUrl?.resizedImageURL(384))
-                    .frame(width: Theme.Layout.cardSize, height: Theme.Layout.cardSize)
-                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.standard, style: .continuous))
-                LinearGradient(colors: [.clear, .black.opacity(0.55)], startPoint: .center, endPoint: .bottom)
-                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.standard, style: .continuous))
-                Text(toplist.updateFrequency ?? "")
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.9))
-                    .padding(8)
-            }
-            .frame(width: Theme.Layout.cardSize, height: Theme.Layout.cardSize)
-            Text(toplist.name)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.primary)
-                .lineLimit(1)
-        }
-        .frame(width: Theme.Layout.cardSize, alignment: .leading)
-        .contentShape(Rectangle())
     }
 
     private func playPlaylist(_ id: Int) {

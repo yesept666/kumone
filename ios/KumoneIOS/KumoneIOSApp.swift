@@ -6,28 +6,33 @@ struct KumoneIOSApp: App {
     @UIApplicationDelegateAdaptor(DownloadAppDelegate.self) private var downloadDelegate
     @State private var showSplash = true
     @State private var splashOpacity = 0.0
+    @State private var splashOffset: CGFloat = 0
 
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                IOSMainWindow()
-                if showSplash {
-                    SplashView()
-                        .opacity(splashOpacity)
-                        .zIndex(1)
-                }
-            }
-            .onAppear {
-                withAnimation(.easeIn(duration: 0.6)) {
-                    splashOpacity = 1.0
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
-                    withAnimation(.easeOut(duration: 0.6)) {
-                        splashOpacity = 0.0
+            GeometryReader { geometry in
+                ZStack {
+                    IOSMainWindow()
+                    if showSplash {
+                        SplashView()
+                            .opacity(splashOpacity)
+                            .offset(y: splashOffset)
+                            .zIndex(1)
                     }
                 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.1) {
-                    showSplash = false
+                .onAppear {
+                    withAnimation(.easeIn(duration: 0.6)) {
+                        splashOpacity = 1.0
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
+                        withAnimation(.easeInOut(duration: 0.8)) {
+                            splashOpacity = 0.0
+                            splashOffset = -geometry.size.height
+                        }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) {
+                        showSplash = false
+                    }
                 }
             }
         }

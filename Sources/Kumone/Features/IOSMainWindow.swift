@@ -610,6 +610,21 @@ struct IOSLibraryView: View {
     @State private var showNewPlaylist = false
     @State private var newPlaylistName = ""
 
+    /// Time-of-day greeting with the account nickname, e.g. "早上好，bluecages3".
+    private var greetingTitle: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let greeting: String
+        switch hour {
+        case 5..<12: greeting = "早上好"
+        case 12..<18: greeting = "下午好"
+        default: greeting = "晚上好"
+        }
+        if let nickname = account.profile?.nickname, !nickname.isEmpty {
+            return "\(greeting)，\(nickname)"
+        }
+        return greeting
+    }
+
     var body: some View {
         List {
             // Profile / Login header
@@ -748,7 +763,7 @@ struct IOSLibraryView: View {
                     .listRowBackground(Color.clear)
             }
         }
-        .navigationTitle("我的")
+        .navigationTitle(greetingTitle)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
