@@ -614,19 +614,34 @@ struct IOSLibraryView: View {
     }
 
     var body: some View {
-        List {
-            // Time-of-day greeting. A large title in the navigation bar
-            // cannot auto-shrink, so the greeting lives here as a row
-            // that scales its font down to fit long nicknames.
-            Text(greetingTitle)
-                .font(.largeTitle)
-                .bold()
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .padding(.top, 4)
+        VStack(spacing: 0) {
+            // Header: time-of-day greeting on the left, settings gear on
+            // the right. The navigation bar is hidden for this page, so
+            // the greeting sits right under the status bar instead of
+            // leaving a tall empty bar above it.
+            HStack(alignment: .center, spacing: 12) {
+                Text(greetingTitle)
+                    .font(.largeTitle)
+                    .bold()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                Spacer(minLength: 0)
+                Button {
+                    showSettings = true
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(Theme.accent)
+                        .frame(width: 44, height: 44)
+                        .background(.ultraThinMaterial, in: Circle())
+                }
+                .accessibilityLabel("设置")
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 6)
+            .padding(.bottom, 10)
 
+            List {
             // Profile / Login header
             Section {
                 SyncedLoginButtons()
@@ -763,16 +778,8 @@ struct IOSLibraryView: View {
                     .listRowBackground(Color.clear)
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showSettings = true
-                } label: {
-                    Image(systemName: "gearshape")
-                }
-                .accessibilityLabel("设置")
-            }
         }
+        .navigationBarHidden(true)
         .sheet(isPresented: $showSettings) {
             NavigationStack {
                 SettingsView()
