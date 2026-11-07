@@ -36,7 +36,7 @@ public struct IOSMainWindow: View {
     public init() {}
 
     public var body: some View {
-        UpstreamGate { gatedBody }
+        gatedBody
             .tint(Theme.accent)
             .preferredColorScheme(settings.appearance.colorScheme)
     }

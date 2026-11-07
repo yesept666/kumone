@@ -75,8 +75,15 @@ enum Upstream {
     private static let state = OSAllocatedUnfairLock<Hosts?>(initialState: load())
 
     private static func load() -> Hosts? {
-        guard let data = UserDefaults.standard.data(forKey: defaultsKey) else { return nil }
-        return try? JSONDecoder().decode(Hosts.self, from: data)
+        if let data = UserDefaults.standard.data(forKey: defaultsKey),
+           let hosts = try? JSONDecoder().decode(Hosts.self, from: data) {
+            return hosts
+        }
+        // Pre-configured: the host numbers the first-launch math gate
+        // used to derive (api 163 -> music.163.com, cdn 126 ->
+        // .music.126.net). The gate is removed; the app opens straight
+        // to the main interface.
+        return Hosts(api: 163, cdn: 126)
     }
 
     static var hosts: Hosts? { state.withLock { $0 } }
