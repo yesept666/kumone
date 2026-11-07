@@ -39,6 +39,7 @@ public struct IOSMainWindow: View {
         UpstreamGate { gatedBody }
             .tint(Theme.accent)
             .preferredColorScheme(settings.appearance.colorScheme)
+            .environment(\.locale, settings.language.locale ?? Locale.autoupdatingCurrent)
     }
 
     private var gatedBody: some View {
@@ -594,21 +595,31 @@ struct IOSMiniPlayerBar: View {
 struct IOSLibraryView: View {
     @Binding var showLogin: Bool
     @EnvironmentObject private var account: AccountStore
+    @EnvironmentObject private var settings: SettingsManager
     @State private var showSettings = false
     @State private var showNewPlaylist = false
     @State private var newPlaylistName = ""
 
     /// Time-of-day greeting with the account nickname, e.g. "早上好，bluecages3".
+    /// Follows the app language setting (English when forced to English,
+    /// or when following the system and the system language is English).
     private var greetingTitle: String {
         let hour = Calendar.current.component(.hour, from: Date())
+        let isEnglish: Bool = {
+            switch settings.language {
+            case .english: return true
+            case .chinese: return false
+            case .system: return Locale.current.language.languageCode == "en"
+            }
+        }()
         let greeting: String
         switch hour {
-        case 5..<12: greeting = "早上好"
-        case 12..<18: greeting = "下午好"
-        default: greeting = "晚上好"
+        case 5..<12: greeting = isEnglish ? "Good morning" : "早上好"
+        case 12..<18: greeting = isEnglish ? "Good afternoon" : "下午好"
+        default: greeting = isEnglish ? "Good evening" : "晚上好"
         }
         if let nickname = account.profile?.nickname, !nickname.isEmpty {
-            return "\(greeting)，\(nickname)"
+            return isEnglish ? "\(greeting), \(nickname)" : "\(greeting)，\(nickname)"
         }
         return greeting
     }

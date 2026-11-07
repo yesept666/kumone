@@ -163,8 +163,16 @@ struct SettingsView: View {
             }
 
             Section {
+                Picker("语言", selection: $settings.language) {
+                    ForEach(AppLanguage.allCases) { language in
+                        Text(language.displayName).tag(language)
+                    }
+                }
+            }
+
+            Section {
                 VStack(spacing: 2) {
-                    Text("Hailie云音乐")
+                    Text("HailieMusic")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                     Text(appVersionAndBuild)

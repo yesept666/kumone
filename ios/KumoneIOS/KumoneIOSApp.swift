@@ -48,7 +48,7 @@ private struct SplashView: View {
         ZStack {
             Color(.systemBackground)
                 .ignoresSafeArea()
-            Text("欢迎回来，Hailie。")
+            Text("Welcome，Hailie")
                 .font(.system(size: 28, weight: .semibold))
                 .foregroundStyle(splashTextColor)
         }
