@@ -52,30 +52,6 @@ enum AppAppearance: String, CaseIterable, Identifiable {
     }
 }
 
-/// App language: follow the system, or force Chinese / English.
-enum AppLanguage: String, CaseIterable, Identifiable {
-    case system, chinese, english
-
-    var id: String { rawValue }
-
-    var displayName: String {
-        switch self {
-        case .system: return String(localized: "跟随系统")
-        case .chinese: return "中文"
-        case .english: return "English"
-        }
-    }
-
-    /// Locale to force, or nil to follow the system language.
-    var locale: Locale? {
-        switch self {
-        case .system: return nil
-        case .chinese: return Locale(identifier: "zh-Hans")
-        case .english: return Locale(identifier: "en")
-        }
-    }
-}
-
 /// What to show above Japanese lyrics.
 enum LyricsAnnotation: String, CaseIterable, Identifiable {
     case off
@@ -143,7 +119,6 @@ final class SettingsManager: ObservableObject {
     enum Keys {
         static let quality = "settings.audioQuality"
         static let appearance = "settings.appearance"
-        static let language = "settings.language"
         static let nowPlayingMode = "settings.nowPlayingMode"
         static let landscapeNowPlayingStyle = "settings.landscapeNowPlayingStyle"
         static let openAlbumOnArtworkClick = "settings.openAlbumOnArtworkClick"
@@ -218,27 +193,6 @@ final class SettingsManager: ObservableObject {
 
     @Published var appearance: AppAppearance {
         didSet { UserDefaults.standard.set(appearance.rawValue, forKey: Keys.appearance) }
-    }
-
-    @Published var language: AppLanguage {
-        didSet {
-            UserDefaults.standard.set(language.rawValue, forKey: Keys.language)
-            applyLanguagePreference()
-        }
-    }
-
-    /// Push the language choice into AppleLanguages so `String(localized:)`
-    /// and the next launch follow it too; the live UI switch itself is
-    /// driven by `.environment(\.locale)` in IOSMainWindow.
-    private func applyLanguagePreference() {
-        switch language {
-        case .system:
-            UserDefaults.standard.removeObject(forKey: "AppleLanguages")
-        case .chinese:
-            UserDefaults.standard.set(["zh-Hans"], forKey: "AppleLanguages")
-        case .english:
-            UserDefaults.standard.set(["en"], forKey: "AppleLanguages")
-        }
     }
 
     @Published var nowPlayingMode: NowPlayingMode {
@@ -416,7 +370,6 @@ final class SettingsManager: ObservableObject {
         audioCacheSizeMB = normalizedAudioCacheSizeMB
         defaults.set(normalizedAudioCacheSizeMB, forKey: Keys.audioCacheSizeMB)
         appearance = defaults.string(forKey: Keys.appearance).flatMap(AppAppearance.init) ?? .auto
-        language = defaults.string(forKey: Keys.language).flatMap(AppLanguage.init) ?? .system
         nowPlayingMode = defaults.string(forKey: Keys.nowPlayingMode).flatMap(NowPlayingMode.init) ?? .immersive
         landscapeNowPlayingStyle = defaults.string(forKey: Keys.landscapeNowPlayingStyle)
             .flatMap(LandscapeNowPlayingStyle.init) ?? .classic
@@ -457,7 +410,5 @@ final class SettingsManager: ObservableObject {
             max(storedAmbientBackgroundIntensity, Self.mainWindowAmbientBackgroundIntensityRange.lowerBound),
             Self.mainWindowAmbientBackgroundIntensityRange.upperBound
         )
-        // All stored properties are initialized now, so it is safe to call.
-        applyLanguagePreference()
     }
 }
