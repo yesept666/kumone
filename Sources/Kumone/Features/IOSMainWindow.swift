@@ -18,7 +18,7 @@ public struct IOSMainWindow: View {
         settings.appearance.colorScheme ?? systemColorScheme
     }
 
-    @State private var selectedTab: IOSTab = .home
+    @State private var selectedTab: IOSTab = .library
 
     /// Returning from the lock screen every few minutes must not rescan
 
@@ -229,20 +229,12 @@ public struct IOSMainWindow: View {
     @available(iOS 26.0, *)
     private var iOS26TabView: some View {
         TabView(selection: $selectedTab) {
-            Tab("推荐", systemImage: "house", value: .home) {
-                tabStack(.home) { HomeView() }
-            }
-
-            Tab("精选", systemImage: "square.grid.2x2", value: .explore) {
-                tabStack(.explore) { ExploreView() }
+            Tab("我的", systemImage: "person.crop.circle", value: .library) {
+                tabStack(.library) { IOSLibraryView(showLogin: $showLogin) }
             }
 
             Tab("漫游", systemImage: "wave.3.right.circle", value: .fm) {
                 tabStack(.fm) { FMView() }
-            }
-
-            Tab("我的", systemImage: "person.crop.circle", value: .library) {
-                tabStack(.library) { IOSLibraryView(showLogin: $showLogin) }
             }
 
             Tab(value: .search, role: .search) {
@@ -256,11 +248,9 @@ public struct IOSMainWindow: View {
     private var customTabInterface: some View {
         ZStack(alignment: .bottom) {
             ZStack {
-                page(.home) { tabStack(.home) { HomeView() } }
-                page(.explore) { tabStack(.explore) { ExploreView() } }
+                page(.library) { tabStack(.library) { IOSLibraryView(showLogin: $showLogin) } }
                 page(.fm) { tabStack(.fm) { FMView() } }
                 page(.search) { tabStack(.search) { SearchView(query: "") } }
-                page(.library) { tabStack(.library) { IOSLibraryView(showLogin: $showLogin) } }
             }
 
             VStack(spacing: 8) {
@@ -342,11 +332,9 @@ enum IOSTab: Hashable {
 
 extension IOSMainWindow {
     static let tabItems: [GlassTabBar.Item] = [
-        .init(tab: .home, title: "推荐", icon: "house"),
-        .init(tab: .explore, title: "精选", icon: "square.grid.2x2"),
+        .init(tab: .library, title: "我的", icon: "person.crop.circle"),
         .init(tab: .fm, title: "漫游", icon: "dot.radiowaves.left.and.right"),
         .init(tab: .search, title: "搜索", icon: "magnifyingglass"),
-        .init(tab: .library, title: "我的", icon: "person.crop.circle"),
     ]
 }
 
