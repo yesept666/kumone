@@ -1,0 +1,38 @@
+# Build the unsigned Hailie iOS IPA on a cloud Mac (GitHub Actions).
+# No local Mac needed: push this repo to GitHub, open Actions, run
+# "Build Hailie IPA", then download the hailie-ios-ipa artifact.
+# The IPA is unsigned: install it with AltStore / SideStore / Sideloadly,
+# signed with your own Apple ID.
+name: Build Hailie IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ios:
+    runs-on: xcode-27
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build unsigned iOS IPA
+        run: |
+          mkdir -p dist
+          xcodebuild -workspace ios/KumoneIOS.xcworkspace -scheme KumoneIOS \
+            -configuration Release -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/ios-dd" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            MARKETING_VERSION="0.3.28" CURRENT_PROJECT_VERSION="$(git rev-list --count HEAD)" \
+            build
+          APP="$RUNNER_TEMP/ios-dd/Build/Products/Release-iphoneos/KumoneIOS.app"
+          mkdir -p "$RUNNER_TEMP/payload/Payload"
+          cp -R "$APP" "$RUNNER_TEMP/payload/Payload/"
+          (cd "$RUNNER_TEMP/payload" && zip -qry "$GITHUB_WORKSPACE/dist/Hailie-iOS-0.3.28.ipa" Payload)
+          ls -la dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hailie-ios-ipa
+          path: dist/Hailie-iOS-0.3.28.ipa
+          if-no-files-found: error

@@ -217,7 +217,7 @@ struct SettingsView: View {
 
             Section {
                 VStack(spacing: 2) {
-                    Text("Kumone")
+                    Text("Hailie云音乐")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                     Text(appVersionAndBuild)
