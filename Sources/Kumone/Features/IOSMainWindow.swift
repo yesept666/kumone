@@ -233,6 +233,10 @@ public struct IOSMainWindow: View {
                 tabStack(.library) { IOSLibraryView(showLogin: $showLogin) }
             }
 
+            Tab("随心一听", systemImage: "wave.3.right.circle", value: .fm) {
+                tabStack(.fm) { FMView() }
+            }
+
             Tab(value: .search, role: .search) {
                 tabStack(.search) { SearchView(query: "") }
             } label: {
@@ -245,6 +249,7 @@ public struct IOSMainWindow: View {
         ZStack(alignment: .bottom) {
             ZStack {
                 page(.library) { tabStack(.library) { IOSLibraryView(showLogin: $showLogin) } }
+                page(.fm) { tabStack(.fm) { FMView() } }
                 page(.search) { tabStack(.search) { SearchView(query: "") } }
             }
 
@@ -328,6 +333,7 @@ enum IOSTab: Hashable {
 extension IOSMainWindow {
     static let tabItems: [GlassTabBar.Item] = [
         .init(tab: .library, title: "我的", icon: "person.crop.circle"),
+        .init(tab: .fm, title: "随心一听", icon: "dot.radiowaves.left.and.right"),
         .init(tab: .search, title: "搜索", icon: "magnifyingglass"),
     ]
 }

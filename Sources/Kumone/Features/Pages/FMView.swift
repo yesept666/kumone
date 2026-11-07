@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// 私人漫游 — immersive personal FM page.
+/// 随心一听 — immersive personal FM page.
 struct FMView: View {
     @EnvironmentObject private var player: PlayerService
     @EnvironmentObject private var account: AccountStore
@@ -24,7 +24,7 @@ struct FMView: View {
                 loginPrompt
             }
         }
-        .navigationTitle("漫游")
+        .navigationTitle("随心一听")
         .compatHiddenToolbarBackground()
     }
 
@@ -90,20 +90,25 @@ struct FMView: View {
                 .animation(AppAnimation.bouncy, value: player.isPlaying && player.isFMMode)
 
                 VStack(spacing: 6) {
-                    HStack(spacing: 8) {
-                        Text(track?.name ?? String(localized: "私人漫游"))
-                            .font(
-                                .system(
-                                    size: isPhone && geo.size.height < 520 ? 18 : 22,
-                                    weight: .bold
+                    // Track title only shows once a track is loaded; the
+                    // idle state shows just the tagline below, with no
+                    // headline above it.
+                    if let track {
+                        HStack(spacing: 8) {
+                            Text(track.name)
+                                .font(
+                                    .system(
+                                        size: isPhone && geo.size.height < 520 ? 18 : 22,
+                                        weight: .bold
+                                    )
                                 )
-                            )
-                            .lineLimit(1)
-                        if track?.fee == 1 {
-                            VIPBadge()
+                                .lineLimit(1)
+                            if track.fee == 1 {
+                                VIPBadge()
+                            }
                         }
                     }
-                    Text(track?.artistNames ?? String(localized: "根据你的口味漫游好音乐"))
+                    Text(track?.artistNames ?? String(localized: "全世界都在挖掘好音乐，而你只是随心一听"))
                         .font(.system(size: 14))
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -116,15 +121,11 @@ struct FMView: View {
                     Button {
                         player.startFM()
                     } label: {
-                        Label("开始漫游", systemImage: "wave.3.right")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 28)
-                            .padding(.vertical, 12)
-                            .background(Theme.accentGradient, in: Capsule())
-                            .shadow(color: Theme.accent.opacity(0.35), radius: 10, y: 3)
+                        Text("🕊️")
+                            .font(.system(size: 48))
                     }
                     .buttonStyle(.pressable)
+                    .accessibilityLabel("开始随心一听")
                 }
 
                 Spacer()
@@ -190,7 +191,7 @@ struct FMView: View {
             Image(systemName: "wave.3.right.circle")
                 .font(.system(size: 52, weight: .light))
                 .foregroundStyle(.tertiary)
-            Text("登录后开启私人漫游")
+            Text("登录后开启随心一听")
                 .font(.headline)
             Text("根据你的听歌口味推荐音乐")
                 .font(.subheadline)
