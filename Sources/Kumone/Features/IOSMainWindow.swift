@@ -1,6 +1,22 @@
 import SwiftUI
 
 #if os(iOS)
+/// The dove emoji rendered to an image, for use as a tab icon. The iOS 26
+/// TabView only renders `Image` icons in tab labels, so the emoji has to
+/// be drawn to a UIImage first; `.renderingMode(.original)` on the
+/// `Image` keeps the dove's colours instead of tinting it.
+private enum DoveTabIcon {
+    static let image: UIImage = {
+        let text = "🕊️" as NSString
+        let font = UIFont.systemFont(ofSize: 26)
+        let size = text.size(withAttributes: [.font: font])
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { _ in
+            text.draw(at: .zero, withAttributes: [.font: font])
+        }
+    }()
+}
+
 public struct IOSMainWindow: View {
     @StateObject private var player = PlayerService.shared
     @StateObject private var account = AccountStore.shared
@@ -239,7 +255,12 @@ public struct IOSMainWindow: View {
                 Label {
                     Text("随心一听")
                 } icon: {
-                    Text("🕊️")
+                    // The iOS 26 TabView only renders `Image` icons; a
+                    // `Text` emoji as the icon is dropped, leaving the tab
+                    // with a title and no icon. Render the dove to an
+                    // image so it shows, keeping its colours.
+                    Image(uiImage: DoveTabIcon.image)
+                        .renderingMode(.original)
                 }
             }
 
