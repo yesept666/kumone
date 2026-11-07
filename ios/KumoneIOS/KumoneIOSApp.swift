@@ -4,10 +4,57 @@ import KumoneIOSFeature
 @main
 struct KumoneIOSApp: App {
     @UIApplicationDelegateAdaptor(DownloadAppDelegate.self) private var downloadDelegate
+    @State private var showSplash = true
+    @State private var splashOpacity = 0.0
+
     var body: some Scene {
         WindowGroup {
-            IOSMainWindow()
+            ZStack {
+                IOSMainWindow()
+                if showSplash {
+                    SplashView()
+                        .opacity(splashOpacity)
+                        .zIndex(1)
+                }
+            }
+            .onAppear {
+                withAnimation(.easeIn(duration: 0.6)) {
+                    splashOpacity = 1.0
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+                    withAnimation(.easeOut(duration: 0.6)) {
+                        splashOpacity = 0.0
+                    }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.1) {
+                    showSplash = false
+                }
+            }
         }
+    }
+}
+
+/// Launch splash: "欢迎回来，Hailie。" fades in, holds, then fades out
+/// to reveal the main interface. Shown once per launch.
+private struct SplashView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            Color(.systemBackground)
+                .ignoresSafeArea()
+            Text("欢迎回来，Hailie。")
+                .font(.system(size: 28, weight: .semibold))
+                .foregroundStyle(splashTextColor)
+        }
+    }
+
+    /// Klein Blue (#002FA7) in light mode; a lighter blue in dark mode
+    /// so it stays readable.
+    private var splashTextColor: Color {
+        colorScheme == .dark
+            ? Color(red: 0.45, green: 0.6, blue: 1.0)
+            : Color(red: 0.0, green: 0.184, blue: 0.655)
     }
 }
 

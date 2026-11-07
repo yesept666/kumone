@@ -378,7 +378,7 @@ final class SettingsManager: ObservableObject {
         // Carry over the old on/off romaji toggle for anyone who had it on.
         lyricsAnnotation = defaults.string(forKey: Keys.annotation).flatMap(LyricsAnnotation.init)
             ?? (defaults.bool(forKey: Keys.showRomaji) ? .romaji : .off)
-        verbatimLyrics = defaults.object(forKey: Keys.verbatimLyrics) as? Bool ?? true
+        verbatimLyrics = defaults.object(forKey: Keys.verbatimLyrics) as? Bool ?? false
         enableUnblock = defaults.object(forKey: Keys.unblock) as? Bool ?? true
         if let rawSourceIDs = defaults.stringArray(forKey: Keys.unblockSources) {
             enabledAudioSourceIDs = Set(rawSourceIDs.compactMap(AudioSourceID.init))
@@ -402,7 +402,7 @@ final class SettingsManager: ObservableObject {
         desktopLyricsCentered = defaults.object(forKey: Keys.desktopLyricsCentered) as? Bool ?? false
         showMainWindowAmbientBackground = defaults.object(
             forKey: Keys.mainWindowAmbientBackground
-        ) as? Bool ?? true
+        ) as? Bool ?? false
         let storedAmbientBackgroundIntensity = defaults.object(
             forKey: Keys.mainWindowAmbientBackgroundIntensity
         ) as? Double ?? 1

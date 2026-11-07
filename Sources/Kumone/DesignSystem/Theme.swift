@@ -2,12 +2,12 @@ import SwiftUI
 
 /// Design tokens: color, radius, spacing, layout metrics.
 enum Theme {
-    /// Accent red, tuned slightly warmer for macOS.
-    static let accent = Color(red: 0.925, green: 0.286, blue: 0.286) // #EC4949
-    static let accentDeep = Color(red: 0.788, green: 0.161, blue: 0.161) // #C92929
+    /// Accent: Klein Blue (#002FA7).
+    static let accent = Color(red: 0.0, green: 0.184, blue: 0.655) // #002FA7
+    static let accentDeep = Color(red: 0.0, green: 0.118, blue: 0.431) // #001E6E
 
     static let accentGradient = LinearGradient(
-        colors: [Color(red: 0.973, green: 0.357, blue: 0.357), accentDeep],
+        colors: [Color(red: 0.169, green: 0.306, blue: 0.847), accentDeep],
         startPoint: .topLeading, endPoint: .bottomTrailing
     )
 
@@ -94,6 +94,18 @@ enum Theme {
         }
         #endif
         static let minWindowWidth: CGFloat = 1020
+        /// Width the split view's divider occupies between the two columns.
+        static let splitDividerWidth: CGFloat = 8
+        /// Window minimum while the sidebar is collapsed. The window-wide
+        /// minimum is a *content* constraint, so with the sidebar hidden it
+        /// lands entirely on the detail column; restoring the sidebar would
+        /// then add its width on top and `.contentMinSize` would widen the
+        /// window every time the now-playing page is dismissed (#19).
+        /// Subtracting the sidebar here keeps the restored total at
+        /// `minWindowWidth`.
+        static var minWindowWidthSidebarCollapsed: CGFloat {
+            minWindowWidth - sidebarWidth - splitDividerWidth
+        }
         static let minWindowHeight: CGFloat = 640
         static let defaultWindowWidth: CGFloat = 1200
         static let defaultWindowHeight: CGFloat = 780

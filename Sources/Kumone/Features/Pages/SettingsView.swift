@@ -119,38 +119,6 @@ struct SettingsView: View {
                 #endif
                 Toggle("点击封面打开专辑", isOn: $settings.openAlbumOnArtworkClick)
                 Toggle("显示歌词翻译", isOn: $settings.showLyricsTranslation)
-                Toggle("逐字歌词（卡拉OK）", isOn: $settings.verbatimLyrics)
-                Picker("日文歌词读音", selection: $settings.lyricsAnnotation) {
-                    ForEach(LyricsAnnotation.allCases) { annotation in
-                        Text(annotation.displayName).tag(annotation)
-                    }
-                }
-                Text("罗马音在歌词上方另起一行，汉字读音把假名标在汉字正上方；缺少官方罗马音时自动生成读音")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Toggle("主界面环境色", isOn: $settings.showMainWindowAmbientBackground)
-                if settings.showMainWindowAmbientBackground {
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            Text("背景色强度")
-                            Spacer()
-                            Text("\(Int(settings.mainWindowAmbientBackgroundIntensity * 100))%")
-                                .foregroundStyle(.secondary)
-                        }
-                        Slider(
-                            value: $settings.mainWindowAmbientBackgroundIntensity,
-                            in: SettingsManager.mainWindowAmbientBackgroundIntensityRange,
-                            step: 0.1
-                        )
-                        HStack {
-                            Text("50%")
-                            Spacer()
-                            Text("150%")
-                        }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    }
-                }
                 #if os(macOS)
                 Toggle("桌面歌词", isOn: $settings.showDesktopLyrics)
                 if settings.showDesktopLyrics {
@@ -191,27 +159,6 @@ struct SettingsView: View {
                 } else {
                     Text("未登录")
                         .foregroundStyle(.secondary)
-                }
-            }
-
-            if showsUpdateControls {
-                Section("更新") {
-                    Toggle("启动时自动检查更新", isOn: $settings.autoCheckUpdates)
-                    Text("关闭后启动不再自动弹出更新提示，仍可手动检查更新")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    #if os(iOS)
-                    if DistributionChannel.current == .sideload {
-                        Button {
-                            IOSUpdater.shared.check(interactive: true)
-                        } label: {
-                            Label("检查更新", systemImage: "arrow.triangle.2.circlepath")
-                        }
-                        Text("装有 TrollStore（巨魔）可在应用内一键自动安装；否则可下载 IPA 用侧载工具重装（登录状态与设置保留）")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    #endif
                 }
             }
 
@@ -264,15 +211,6 @@ struct SettingsView: View {
             }
             #endif
         }
-    }
-
-    /// Sparkle on macOS; on iOS only sideload builds carry an updater.
-    private var showsUpdateControls: Bool {
-        #if os(iOS)
-        return DistributionChannel.current.allowsSelfUpdate
-        #else
-        return true
-        #endif
     }
 
     private var appVersion: String {

@@ -58,9 +58,6 @@ public struct IOSMainWindow: View {
             .task {
                 await DownloadManager.shared.start()
                 await account.bootstrap()
-                if settings.autoCheckUpdates, DistributionChannel.current.allowsSelfUpdate {
-                    IOSUpdater.shared.check(interactive: false)
-                }
             }
             .onChange(of: scenePhase) { phase in
                 guard phase == .active else { return }
@@ -71,8 +68,8 @@ public struct IOSMainWindow: View {
                     if DownloadManager.shared.network.connected { await account.refreshLibrary() }
                 }
             }
-            .task(id: settings.showMainWindowAmbientBackground) {
-                artworkStore.setArtworkNeeded(settings.showMainWindowAmbientBackground)
+            .task(id: player.hasCurrentTrack) {
+                artworkStore.setArtworkNeeded(player.hasCurrentTrack)
             }
             .sheet(isPresented: $updater.showSheet) {
                 IOSUpdaterSheet()
@@ -177,15 +174,6 @@ public struct IOSMainWindow: View {
             MainWindow(path: $iPadPath)
         } else {
             tabInterface
-                .overlay {
-                    if settings.showMainWindowAmbientBackground {
-                        MainWindowAmbientBackground(
-                            colors: artworkStore.colors,
-                            intensity: settings.mainWindowAmbientBackgroundIntensity
-                        )
-                        .ignoresSafeArea()
-                    }
-                }
         }
     }
 
@@ -205,19 +193,6 @@ public struct IOSMainWindow: View {
                 .environmentObject(settings)
         }
         .modifier(NowPlayingLoginPresenter())
-        // A fullScreenCover sits above the root toast overlay, so re-host the
-        // same ToastCenter on the page while it is presented that way (#182).
-        // The legacy in-place page (iOS 16/17) is already under the root
-        // overlay; a second toast there would draw on top of the first.
-        .overlay(alignment: .top) {
-            if usesSystemInteractiveDismissal, let toast = toasts.current {
-                ToastView(toast: toast)
-                    .padding(.top, 8)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-        }
-        .animation(.spring(duration: 0.3), value: toasts.current)
-        .environmentObject(toasts)
     }
 
     @ViewBuilder
