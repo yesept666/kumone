@@ -39,27 +39,18 @@ struct KumoneIOSApp: App {
     }
 }
 
-/// Launch splash: "欢迎回来，Hailie。" fades in, holds, then fades out
-/// to reveal the main interface. Shown once per launch.
+/// Launch splash: "Welcome back, Hailie." on a Klein Blue background,
+/// white text. Fades in, holds, then slides up and fades out to reveal
+/// the main interface. Shown once per launch.
 private struct SplashView: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
         ZStack {
-            Color(.systemBackground)
+            Color(red: 0.0, green: 0.184, blue: 0.655)
                 .ignoresSafeArea()
-            Text("Welcome，Hailie")
+            Text("Welcome back, Hailie.")
                 .font(.system(size: 28, weight: .semibold))
-                .foregroundStyle(splashTextColor)
+                .foregroundStyle(.white)
         }
-    }
-
-    /// Klein Blue (#002FA7) in light mode; a lighter blue in dark mode
-    /// so it stays readable.
-    private var splashTextColor: Color {
-        colorScheme == .dark
-            ? Color(red: 0.45, green: 0.6, blue: 1.0)
-            : Color(red: 0.0, green: 0.184, blue: 0.655)
     }
 }
 

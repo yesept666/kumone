@@ -555,3 +555,11 @@
 "请先完成首次使用的设置" = "Finish first-launch setup first";
 "请先登录账号" = "Sign in first";
 "语言" = "Language";
+"我的音乐" = "My Music";
+"搜索" = "Search";
+"同步我喜欢的音乐、歌单与每日推荐" = "Sync your liked music, playlists, and daily recs";
+"设置" = "Settings";
+"需要重启 App" = "Restart Required";
+"语言已切换，重启 App 后全部界面将切换为新语言。" = "Language changed. Restart the app to apply the new language to all screens.";
+"现在重启" = "Restart Now";
+"稍后再说" = "Later";

@@ -8,6 +8,7 @@ struct SettingsView: View {
     @EnvironmentObject private var account: AccountStore
     @Environment(\.openDestination) private var openDestination
     @Environment(\.dismiss) private var dismiss
+    @State private var showLanguageRestartAlert = false
     #if os(macOS)
     @AppStorage(SettingsManager.Keys.menuBarPlayer) private var showMenuBarPlayer = false
     @State private var navigationPath: [SettingsPage] = []
@@ -218,6 +219,18 @@ struct SettingsView: View {
                 }
             }
             #endif
+        }
+        // The app's strings live in a Swift Package bundle, which caches
+        // its preferred language at launch. Changing the language therefore
+        // only takes full effect after a restart, so prompt for one.
+        .onChange(of: settings.language) { _ in
+            showLanguageRestartAlert = true
+        }
+        .alert(String(localized: "需要重启 App"), isPresented: $showLanguageRestartAlert) {
+            Button(String(localized: "现在重启")) { exit(0) }
+            Button(String(localized: "稍后再说"), role: .cancel) {}
+        } message: {
+            Text("语言已切换，重启 App 后全部界面将切换为新语言。")
         }
     }
 

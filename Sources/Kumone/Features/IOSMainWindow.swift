@@ -626,6 +626,18 @@ struct IOSLibraryView: View {
 
     var body: some View {
         List {
+            // Time-of-day greeting. A large title in the navigation bar
+            // cannot auto-shrink, so the greeting lives here as a row
+            // that scales its font down to fit long nicknames.
+            Text(greetingTitle)
+                .font(.largeTitle)
+                .bold()
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .padding(.top, 4)
+
             // Profile / Login header
             Section {
                 SyncedLoginButtons()
@@ -762,7 +774,6 @@ struct IOSLibraryView: View {
                     .listRowBackground(Color.clear)
             }
         }
-        .navigationTitle(greetingTitle)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
