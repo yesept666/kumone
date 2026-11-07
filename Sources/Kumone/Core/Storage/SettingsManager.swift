@@ -417,7 +417,6 @@ final class SettingsManager: ObservableObject {
         defaults.set(normalizedAudioCacheSizeMB, forKey: Keys.audioCacheSizeMB)
         appearance = defaults.string(forKey: Keys.appearance).flatMap(AppAppearance.init) ?? .auto
         language = defaults.string(forKey: Keys.language).flatMap(AppLanguage.init) ?? .system
-        applyLanguagePreference()
         nowPlayingMode = defaults.string(forKey: Keys.nowPlayingMode).flatMap(NowPlayingMode.init) ?? .immersive
         landscapeNowPlayingStyle = defaults.string(forKey: Keys.landscapeNowPlayingStyle)
             .flatMap(LandscapeNowPlayingStyle.init) ?? .classic
@@ -458,5 +457,7 @@ final class SettingsManager: ObservableObject {
             max(storedAmbientBackgroundIntensity, Self.mainWindowAmbientBackgroundIntensityRange.lowerBound),
             Self.mainWindowAmbientBackgroundIntensityRange.upperBound
         )
+        // All stored properties are initialized now, so it is safe to call.
+        applyLanguagePreference()
     }
 }
