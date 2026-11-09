@@ -822,6 +822,21 @@ final class PlayerService: ObservableObject {
         }
         guard generation == resolveGeneration else { return }
 
+        // The logged-in request yielded nothing (rejected, e.g. -460, or
+        // empty): retry as a guest. A request without login cookies often
+        // still returns a playable address for non-VIP tracks.
+        if data?.url == nil, MusicClient.shared.isLoggedIn {
+            do {
+                data = try await MusicAPI.songURLAsGuest(ids: [track.id], level: quality).first
+                if data?.url == nil, quality != AudioQuality.standard.rawValue {
+                    data = try await MusicAPI.songURLAsGuest(ids: [track.id], level: AudioQuality.standard.rawValue).first
+                }
+            } catch {
+                guard generation == resolveGeneration else { return }
+            }
+        }
+        guard generation == resolveGeneration else { return }
+
         var resolvedURL: URL?
         if let urlString = data?.url {
             resolvedURL = URL(string: urlString.replacingOccurrences(of: "http://", with: "https://"))

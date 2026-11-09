@@ -420,6 +420,19 @@ enum MusicAPI {
         return try await eapi(SongURLResponse.self, "/song/enhance/player/url/v1", payload).data
     }
 
+    /// Same endpoint, but through an ephemeral client that carries no login
+    /// cookies. Used as a fallback when the logged-in request is rejected
+    /// (e.g. NetEase returns -460) or yields no URL: a guest request often
+    /// still returns a playable address for non-VIP tracks.
+    static func songURLAsGuest(ids: [Int], level: String) async throws -> [SongURLData] {
+        let idString = "[" + ids.map(String.init).joined(separator: ",") + "]"
+        var payload: [String: Any] = ["ids": idString, "level": level, "encodeType": "flac"]
+        if level == "sky" { payload["immerseType"] = "c51" }
+        let guest = MusicClient(configuration: .ephemeral, persistsCookies: false)
+        let body = try await guest.eapi("/song/enhance/player/url/v1", payload)
+        return try guest.decoded(SongURLResponse.self, from: body).data
+    }
+
     /// Download eligibility is resolved independently of the playback URL.
     /// An injectable client lets the compatibility probe use an isolated cookie
     /// jar without reading or changing the listener's current login.
